@@ -295,15 +295,30 @@ rd_status_t app_heartbeat_acceleration_process (float * const  data_x,
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     app_endpoint_ac_data_t acceleration_data = {0};
 
+
     // Sensor is back in low-power mode, process the acceleration data.
+
+    LOG("raw-rample-start\r\n"); // marker for start
+    LOG("sample,x,y,z\r\n"); // CSV header
+    ri_delay_ms(1U);
+
+
+#if 1
+    static char log_msg[512] = {0};
+
     for (size_t ii = 0; ii < APP_SENSOR_BUFFER_DEPTH; ii++)
     {
+#if 1
         // Print samples
-        // snprintf(log_msg, sizeof(log_msg), "X: %.3f Y: %.3f Z: %.3f \r\n", data_x[ii], data_y[ii], data_z[ii]);
-        // LOG(log_msg);
+        snprintf(log_msg, sizeof(log_msg), "%d,%.3f,%.3f,%.3f\r\n",
+            ii, data_x[ii], data_y[ii], data_z[ii]);
+        LOG(log_msg);
         // Delay to let logs process
-        // ri_delay_ms(1U);
+        ri_delay_ms(1U);
+#endif
     }
+    LOG("raw-rample-end\r\n"); // marker for end
+#endif
 
     acceleration_data.rms[APP_ENDPOINT_AC_X_INDEX] = rl_rms (data_x, APP_SENSOR_BUFFER_DEPTH);
     acceleration_data.p2p[APP_ENDPOINT_AC_X_INDEX] = rl_peak2peak (data_x,
